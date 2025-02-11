@@ -6,12 +6,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -21,13 +20,16 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfig {
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(
-						(auth)->auth
+						(auth) -> auth
 								.requestMatchers("/", "/home").permitAll()
+								.requestMatchers("/customers/**").hasRole("USER")
+								.requestMatchers("/orders").hasRole("ADMIN")
 								.anyRequest().authenticated()
-				).with(new HttpBasicConfigurer<>(), customizer -> {});
+				).with(new HttpBasicConfigurer<>(), customizer -> {
+				});
 		return http.build();
 	}
 
@@ -41,5 +43,12 @@ public class SecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public GrantedAuthoritiesMapper authoritiesMapper() {
+		SimpleAuthorityMapper authorityMapper = new SimpleAuthorityMapper();
+		authorityMapper.setConvertToUpperCase(true);
+		return authorityMapper;
 	}
 }

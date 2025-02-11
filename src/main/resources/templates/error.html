@@ -11,7 +11,8 @@
 <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold">Oops</h1>
     <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">The page you are looking for doesn't exist.</p>
+        <h3 class="display-5 text-center" th:text="${errorCode}">200</h3>
+        <p class="lead mb-4" th:text="${errorText}">The page you are looking for doesn't exist.</p>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

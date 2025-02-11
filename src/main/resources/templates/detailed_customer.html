@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
             <a class="btn btn-primary btn-sm" href="#" th:href="@{mailto:{to}(to=${customer.email})}">Send Email</a>
         </div>
     </div>
-    <div class="container" >
+    <div class="container" sec:authorize="hasRole('ADMIN')">
         <table class="table">
             <thead>
             <th scope="col">Order Number</th>

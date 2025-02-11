@@ -1,15 +1,18 @@
 package com.frankmoley.lil.adminweb.web;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.security.Principal;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.frankmoley.lil.adminweb.data.model.Customer;
 import com.frankmoley.lil.adminweb.data.model.Order;
 import com.frankmoley.lil.adminweb.data.repository.CustomerRepository;
 import com.frankmoley.lil.adminweb.data.repository.OrderRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +50,7 @@ public class CustomerController {
     }
 
     @GetMapping(path="/{id}")
-    public String getUser(@PathVariable("id")long customerId, Model model){
+    public String getUser(@PathVariable("id")long customerId, Principal principal, Model model){
         Optional<Customer> customer = this.customerRepository.findById(customerId);
         if (customer.isEmpty()) {
             throw new ResponseStatusException(
@@ -55,9 +58,17 @@ public class CustomerController {
             );
         }
         model.addAttribute("customer", customer.get());
-        Iterable<Order> ordersIterable = this.orderRepository.findAllByCustomerId(customer.get().getId());
         List<Order> orders = new ArrayList<>();
-        ordersIterable.forEach(orders::add);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
+
+        if (isAdmin) {
+            Iterable<Order> ordersIterable = this.orderRepository.findAllByCustomerId(customer.get().getId());
+            ordersIterable.forEach(orders::add);
+        }
         model.addAttribute("orders", orders);
         model.addAttribute("module", "customers");
         return "detailed_customer";
