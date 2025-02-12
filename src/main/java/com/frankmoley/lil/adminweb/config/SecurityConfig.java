@@ -28,8 +28,18 @@ public class SecurityConfig {
 								.requestMatchers("/customers/**").hasRole("USER")
 								.requestMatchers("/orders").hasRole("ADMIN")
 								.anyRequest().authenticated()
-				).with(new HttpBasicConfigurer<>(), customizer -> {
-				});
+				)
+				.formLogin(login -> login
+						.loginPage("/login")
+						.failureUrl("/login?error")
+						.permitAll()
+				)
+				.logout(logout -> logout
+						.clearAuthentication(true)
+						.invalidateHttpSession(true)
+						.logoutSuccessUrl("/login?logout")
+						.permitAll()
+				);
 		return http.build();
 	}
 

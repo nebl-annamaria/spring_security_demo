@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Header</title>
@@ -21,6 +21,14 @@
                     <a class="nav-link" th:classappend="${module == 'orders' ? 'active' : ''}" href="#" th:href="@{/orders}">Orders</a>
                 </li>
             </ul>
+        </div>
+        <div class="d-flex flex-row-reverse">
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post"><button type="submit" class="btn btn-primary">Logout</button>></form>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-primary" href="#" th:href="@{/login}">Login</a>
+            </div>
         </div>
     </div>
 </nav>
