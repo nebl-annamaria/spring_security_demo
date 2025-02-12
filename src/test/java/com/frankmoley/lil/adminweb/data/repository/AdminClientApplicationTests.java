@@ -1,10 +1,10 @@
-package com.frankmoley.lil.adminweb;
+package com.frankmoley.lil.adminweb.data.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AdminWebApplicationTests {
+class AdminClientApplicationTests {
 
     @Test
     void contextLoads() {
